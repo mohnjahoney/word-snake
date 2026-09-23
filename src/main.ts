@@ -8,7 +8,6 @@ type Collected = { letter: string; position: Point; id: number };
 const SIZE = 12;
 const SNAKE_LENGTH = 8;
 const RUN_SECONDS = 60;
-const STEP_MS = 185;
 
 const SHORT_WORDS = [
   'ace', 'act', 'air', 'and', 'ant', 'arc', 'are', 'art', 'ate', 'bad', 'bar', 'bed', 'bee',
@@ -98,14 +97,14 @@ app.innerHTML = `
         </div>
 
         <div class="controls">
-          <p><kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd> steer</p>
+          <p><kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd> move one tile</p>
           <p><kbd>Tab</kbd> choose <kbd>Enter</kbd> score</p>
         </div>
         <button id="reset" class="secondary">Reset board</button>
       </aside>
     </section>
 
-    <footer><span id="message">Seeded with word paths. Find one.</span><span>Prototype rules: 60 seconds · fixed 8-letter window</span></footer>
+    <footer><span id="message">Seeded with word paths. Find one.</span><span>Prototype rules: 60 seconds · one press per tile · fixed 8-letter window</span></footer>
   </div>
 `;
 
@@ -141,9 +140,7 @@ let selectedIndex = 0;
 let score = 0;
 let remaining = RUN_SECONDS;
 let running = false;
-let tickTimer: number | undefined;
 let clockTimer: number | undefined;
-let lastStep = 0;
 let nextId = 1;
 let floatingScore: { text: string; x: number; y: number; born: number } | null = null;
 
@@ -211,9 +208,7 @@ function resetState() {
   remaining = RUN_SECONDS;
   running = false;
   floatingScore = null;
-  if (tickTimer) window.clearInterval(tickTimer);
   if (clockTimer) window.clearInterval(clockTimer);
-  tickTimer = undefined;
   clockTimer = undefined;
   overlayEl.classList.remove('hidden');
   overlayEl.querySelector('h2')!.textContent = 'Find your line.';
@@ -228,8 +223,6 @@ function startRun() {
   if (running) return;
   running = true;
   overlayEl.classList.add('hidden');
-  lastStep = performance.now();
-  tickTimer = window.setInterval(step, STEP_MS);
   clockTimer = window.setInterval(() => {
     remaining -= 1;
     if (remaining <= 0) endRun();
@@ -240,9 +233,7 @@ function startRun() {
 
 function endRun() {
   running = false;
-  if (tickTimer) window.clearInterval(tickTimer);
   if (clockTimer) window.clearInterval(clockTimer);
-  tickTimer = undefined;
   clockTimer = undefined;
   overlayEl.classList.remove('hidden');
   overlayEl.querySelector('h2')!.textContent = 'Time. Nice run.';
@@ -414,8 +405,9 @@ window.addEventListener('keydown', (event) => {
   const next = directions[event.key] || directions[event.key.toLowerCase()];
   if (next) {
     event.preventDefault();
-    setDirection(next);
     if (!running) startRun();
+    setDirection(next);
+    step();
   } else if (event.key === 'Tab') {
     event.preventDefault(); cycleCandidate();
   } else if (event.key === 'Enter' || event.key === ' ') {
