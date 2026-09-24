@@ -1,4 +1,5 @@
 import './style.css';
+import nytAnswers from './nytAnswers.json';
 
 type Point = { x: number; y: number };
 type Direction = Point;
@@ -40,19 +41,7 @@ const FOUR_WORDS = [
   'yard', 'year', 'your', 'zero'
 ];
 
-const FIVE_WORDS = [
-  'apple', 'beach', 'black', 'brain', 'bread', 'break', 'bring', 'brown', 'carry', 'chair', 'charm',
-  'child', 'clean', 'clear', 'clock', 'cloud', 'color', 'could', 'dance', 'dream', 'early', 'earth',
-  'eight', 'enjoy', 'every', 'field', 'first', 'floor', 'focus', 'found', 'front', 'fruit', 'giant',
-  ' given', 'green', 'group', 'happy', 'heart', 'house', 'human', 'jolly', 'judge', 'laugh', 'learn',
-  'light', 'lucky', 'magic', 'maybe', 'money', 'month', 'mouse', 'music', 'night', 'ocean', 'paint',
-  'party', 'peace', 'phone', 'place', 'plant', 'point', 'power', 'quick', 'quiet', 'radio', 'raise',
-  'reach', 'river', 'round', 'royal', 'scale', 'score', 'serve', 'share', 'sheep', 'short', 'sleep',
-  'small', 'smile', 'sound', 'space', 'spell', 'sport', 'start', 'steam', 'stone', 'store', 'story',
-  'sweet', 'table', 'teach', 'thank', 'there', 'thing', 'think', 'third', 'three', 'tiger', 'today',
-  'touch', 'tower', 'train', 'trust', 'under', 'until', 'visit', 'voice', 'watch', 'water', 'where',
-  'which', 'white', 'whole', 'world', 'write', 'young'
-].map((word) => word.trim());
+const FIVE_WORDS = nytAnswers.map((word) => word.toLowerCase());
 
 const WORDS = new Set([...SHORT_WORDS, ...FOUR_WORDS, ...FIVE_WORDS]);
 const SEEDED = ['stone', 'apple', 'light', 'dream', 'water', 'train', 'score', 'green', 'play', 'heart', 'star', 'moon'];
